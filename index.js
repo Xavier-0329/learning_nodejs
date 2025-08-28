@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+require('dotenv').config();
+
 
 app.use(express.json());
 
@@ -8,43 +10,29 @@ app.use(cors());
 
 app.use(express.static('dist'))
 
-const mongoose = require('mongoose')
+const Note = require('./models/note')
+// let notes = [
+//   {
+//     id: "1",
+//     content: "HTML is easy",
+//     important: true,
+//   },
+//   {
+//     id: "2",
+//     content: "Browser can execute only JavaScript",
+//     important: false,
+//   },
+//   {
+//     id: "3",
+//     content: "GET and POST are the most important methods of HTTP protocol",
+//     important: true,
+//   },
+// ];
 
-const password = process.argv[3]
-const url = `mongodb+srv://xavierlee0329_db_user:${password}@cluster0.6raanqy.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Cluster0`
-
-mongoose.set('strictQuery',false)
-mongoose.connect(url)
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
-})
-
-const Note = mongoose.model('Note', noteSchema)
-
-let notes = [
-  {
-    id: "1",
-    content: "HTML is easy",
-    important: true,
-  },
-  {
-    id: "2",
-    content: "Browser can execute only JavaScript",
-    important: false,
-  },
-  {
-    id: "3",
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true,
-  },
-];
-
-const generateId = () =>{
-  const maxId = notes.length > 0? Math.max(...notes.map(n => n.id)) : 0
-  return (maxId + 1).toString()
-}
+// const generateId = () =>{
+//   const maxId = notes.length > 0? Math.max(...notes.map(n => n.id)) : 0
+//   return (maxId + 1).toString()
+// }
 
 app.get("/api/notes", (request, response) => {
   Note.find({}).then(result => {
@@ -94,7 +82,7 @@ app.post("/api/notes", (request, response) => {
   response.json(note);
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
